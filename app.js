@@ -22,12 +22,17 @@ app.event('workflow_step_execute', async ({ event, client, context }) => {
       // Create a new WorkflowStep instance
     const ws = new WorkflowStep('ticketData', {
     edit: async ({ ack, step, configure }) => {},
-    save: async ({ ack, step, update }) => {},
+    
+    save: async ({ ack, step, update }) => {
+      
+    },
+    
+    //when a user executes the step
     execute: async ({ step, complete, fail }) => {
        const { inputs } = step;
     
-      console.log('inputs)
-      console.log()
+      console.log('inputs')
+      console.log(inputs)
     const outputs = {
       taskName: inputs.taskName.value,
       taskDescription: inputs.taskDescription.value,
