@@ -1,6 +1,5 @@
 // Require the Bolt package (github.com/slackapi/bolt)
-const { App } = require('@slack/bolt');
-const {WorkflowStep } = require('@slack/bolt/workflows/step');
+const { App, WorkflowStep } = require("@slack/bolt");
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -9,7 +8,7 @@ const app = new App({
 
 
       // Create a new WorkflowStep instance
-    const ws = new WorkflowStep('ticketData', {
+    const ws = new WorkflowStep("ticketData", {
     
       edit: async ({ ack, step, configure }) => {
         await ack();
@@ -97,17 +96,6 @@ const app = new App({
 
     app.step(ws);
 
-      console.log('logging the event: ')
-      console.log(event)
-
-
-
-
-
-
-
-
-  console.log('before app . event')
 
 
 // All the room in the world for your code
