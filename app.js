@@ -1,5 +1,6 @@
 // Require the Bolt package (github.com/slackapi/bolt)
 const { App, WorkflowStep } = require("@slack/bolt");
+const uuid = require("uuid")
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -16,13 +17,14 @@ const app = new App({
         const blocks = [
           {
             type: 'input',
-            block_id: 'task_name_input',
+            // block_id: 'task_name_input',
+            block_id: 'ticket_submitter',
             element: {
               type: 'plain_text_input',
               action_id: 'name',
               placeholder: {
                 type: 'plain_text',
-                text: 'Add a task name',
+                text: 'Add the person who submitted the ticket',
               },
             },
             label: {
@@ -32,13 +34,14 @@ const app = new App({
           },
           {
             type: 'input',
-            block_id: 'task_description_input',
+            // block_id: 'task_description_input',
+            block_id: 'ticket_description',
             element: {
               type: 'plain_text_input',
               action_id: 'description',
               placeholder: {
                 type: 'plain_text',
-                text: 'Add a task description',
+                text: 'Add an issue description',
               },
             },
             label: {
@@ -55,24 +58,24 @@ const app = new App({
         await ack();
         console.log('before we save')
         const { values } = view.state;
-        const taskName = values.task_name_input.name;
-        const taskDescription = values.task_description_input.description;
+        const ticketSubmitter = values.ticket_submitter.name;
+        const ticketDescription = values.ticket_description.description;
 
         const inputs = {
-          taskName: { value: taskName.value },
-          taskDescription: { value: taskDescription.value }
+          ticketSubmitter: { value: ticketSubmitter.value },
+          ticketDescription: { value: ticketDescription.value }
         };
 
         const outputs = [
           {
             type: 'text',
-            name: 'taskName',
-            label: 'Task name',
+            name: 'ticketSubmitter',
+            label: 'Person who submitted ticket',
           },
           {
             type: 'text',
-            name: 'taskDescription',
-            label: 'Task description',
+            name: 'ticketDescription',
+            label: 'Description of the problem',
           }
         ];
 
@@ -86,8 +89,9 @@ const app = new App({
         console.log('inputs')
         console.log(inputs)
       const outputs = {
-        taskName: inputs.taskName.value,
-        taskDescription: inputs.taskDescription.value,
+        ticketSubmitter: inputs.ticketSubmitter.value,
+        ticketDescription: inputs.ticketDescription.value,
+        randomID: uuid()
       };
 
       // if everything was successful
