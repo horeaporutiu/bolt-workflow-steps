@@ -1,8 +1,6 @@
 SupportDesk Slack app
 =================
 
-[Bolt](https://slack.dev/bolt) is our framework that lets you build JavaScript-based Slack apps in a flash.
-
 This project is an implementation of workflow steps from apps, using the tutorial 
 outlined on the [slack API website](https://api.slack.com/workflows/steps). 
 
