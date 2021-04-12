@@ -6,7 +6,7 @@ const app = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET
 });
 
-app.action({ callback_id: "helpdesk-request-form-submission", type: "workflow_step_edit" }, async ({ ack, body, client }) => {
+app.action({ callback_id: "ticketData", type: "workflow_step_edit" }, async ({ ack, body, client }) => {
   await ack();
 
   const configView = {
