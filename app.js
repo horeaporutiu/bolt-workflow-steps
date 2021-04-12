@@ -12,6 +12,7 @@ const app = new App({
     
       edit: async ({ ack, step, configure }) => {
         await ack();
+        console.log('before we edit')
         const blocks = [
           {
             type: 'input',
@@ -26,7 +27,7 @@ const app = new App({
             },
             label: {
               type: 'plain_text',
-              text: 'Task name',
+              text: 'User submitting ticket',
             },
           },
           {
@@ -42,7 +43,7 @@ const app = new App({
             },
             label: {
               type: 'plain_text',
-              text: 'Task description',
+              text: 'Ticket description',
             },
           },
         ];
@@ -52,6 +53,7 @@ const app = new App({
 
   save: async ({ ack, step, view, update }) => {
         await ack();
+        console.log('before we save')
         const { values } = view.state;
         const taskName = values.task_name_input.name;
         const taskDescription = values.task_description_input.description;
