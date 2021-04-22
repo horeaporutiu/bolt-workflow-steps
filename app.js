@@ -2,6 +2,8 @@
 const { App, WorkflowStep } = require("@slack/bolt");
 // use uuid to create ticketID 
 const { v4: uuidv4 } = require('uuid');
+var request = require("request");
+
 
 //Create bolt app
 const app = new App({
@@ -43,6 +45,19 @@ const ws = new WorkflowStep("ticketData", {
           text: 'Ticket description',
         },
       },
+      {
+        type: 'input',
+        //this is the ticket description
+        block_id: 'issue_type',
+        element: {
+          type: 'plain_text_input',
+          action_id: 'issueType',
+        },
+        label: {
+          type: 'plain_text',
+          text: 'Issue Type',
+        },
+      },
     ];
     await configure({ blocks });
   },
@@ -54,10 +69,13 @@ const ws = new WorkflowStep("ticketData", {
     //here we grab the user-entered values
     const ticketSubmitter = values.ticket_submitter.name;
     const ticketDescription = values.ticket_description.description;
+    const issueType = values.issue_type.issueType;
 
     const inputs = {
       ticketSubmitter: { value: ticketSubmitter.value },
-      ticketDescription: { value: ticketDescription.value }
+      ticketDescription: { value: ticketDescription.value },
+      issueType: { value: issueType.value },
+
     };
 
     const outputs = [
@@ -70,21 +88,58 @@ const ws = new WorkflowStep("ticketData", {
         type: 'text',
         name: 'ticketDescription',
         label: 'Description of the problem',
+      },
+      {
+        type: 'text',
+        name: 'issueType',
+        label: 'Type of issue',
       }
     ];
     await update({ inputs, outputs });
   },
 
-  //handle the "workflow_step_execute" event
+  //when a user executes the step
   execute: async ({ step, complete, fail }) => {
-    
+
     const { inputs } = step;
-    
+
     const outputs = {
       ticketSubmitter: inputs.ticketSubmitter.value,
       ticketDescription: inputs.ticketDescription.value,
+      issueType: inputs.issueType.value,
       randomID: uuidv4()
     };
+
+    // Demo request to Jira Service Desk API, to create an issue with the user entered values from the Workflow
+    var options = {
+      method: 'POST',
+      url: 'https://supportdesk423.atlassian.net/rest/api/2/issue/',
+      headers:
+      {
+        authorization: process.env.JIRA_API_TOKEN,
+        'content-type': 'application/json'
+      },
+      body:
+      {
+        fields:
+        {
+          project:
+            { 
+              key: 'SLACK' 
+            },
+          summary: 'SupportDesk and Slack Integration Demo',
+          description: inputs.ticketDescription.value,
+          issuetype: { name: inputs.issueType.value }
+        }
+      },
+      json: true
+    };
+
+    request(options, function (error, response, body) {
+      if (error) throw new Error(error);
+
+      console.log(body);
+    });
 
     console.log('JSON response to be sent to SupportDesk API, for further integration: ')
     console.log(outputs)
@@ -97,6 +152,8 @@ const ws = new WorkflowStep("ticketData", {
 app.step(ws);
 
 (async () => {
+  // Start your app
   await app.start(process.env.PORT || 3000);
-  console.log('⚡️ Bolt app is running! HSFHDS');
+
+  console.log('⚡️ Bolt app is running!');
 })();
